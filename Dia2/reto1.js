@@ -11,9 +11,12 @@
 // • El desarrollo de estas consultas se tiene que hacer tanto en Workbench como en Node.js
 const mysql = require('mysql2/promise');
 
-const connect = async()=>{
-    try{
-        const registro = await mysql.createConnection({
+async function main()
+{
+    try
+    {
+        let connection = await mysql.createConnection(
+        {
             host: 'localhost',
             user: 'root',
             password: 'Codenotch',
@@ -22,91 +25,86 @@ const connect = async()=>{
 
         console.log('Conexión correcta');
 
-
-        //--calcular la nota media de los alumnos de la asignatura 1.
-        // let sql = "SELECT subject_id, AVG(mark) FROM codenotch.mark WHERE subject_id = 23001;"
-
-// connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
-
+//--calcular la nota media de los alumnos de la asignatura 1.
+        let media_notas = "SELECT AVG(mark) FROM marks WHERE subject_id = 23001;"
+        let [result] = await connection.query(media_notas);
+        console.log('nota media de los alumnos de la asignatura 23001');
+        console.log(result);
+        console.log(`----------------------------------------------`);
+        
 
         //-----Calcular el número total de alumnos que hay en el bootcamp.
-        // let sql = `SELECT COUNT(*) FROM students;`;
-        // connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
+        let total_students = `SELECT COUNT(*) FROM students;`;
+        let [resultado2] = await connection.query(total_students);
+        console.log('número total de alumnos');
+        console.log(resultado2);
+        console.log(`----------------------------------------------`);
 
         // Listar todos los campos de la tabla “groups”.
-        // let sql = `SELECT * FROM grupo;`;
+        let todo_grupos = `SELECT * FROM grupo;`;
+        let [resultado3] = await connection.query(todo_grupos);
+        console.log('Todos los campos de grupo');
+        console.log(resultado3);
+        console.log(`----------------------------------------------`);
+
+        //Eliminar todas las notas > 5 del año pasado-FALTA
+        //  let eliminar_notas5 = `DELETE FROM marks WHERE (mark > 5) AND  ( date >= '2022/01/01' AND date <= '2022/12/31')`;
+        //  let [resultado4] = await connection.query(eliminar_notas5);
+        //  console.log('Eliminar todas las notas > 5 del año pasado');
+        //  console.log(`----------------------------------------------`);
+        //  console.log(resultado4);
+
+        //Listar estudiantes del año en curso--
        
+        let students_year = "SELECT * FROM students WHERE year = 2023;"
+        let [resultado5] = await connection.query(students_year);
+        console.log('Listar estudiantes del año en curso');
+        console.log(`----------------------------------------------`);
+        console.log(resultado5);
 
-// connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
+        //Calcular el número de profes por asignatura
+        let nro_teachers_subject= `SELECT subject_id, COUNT(*) FROM subject_teacher GROUP BY subject_id;`;
+        let [resultado6] = await connection.query(nro_teachers_subject);
+        console.log('Total de profes por asignatura');
+        console.log(resultado6);
+        console.log(`----------------------------------------------`);
 
-        //-- Eliminar todas las notas > 5 del año pasado-FALTA
-        // let sql = `DELETE FROM marks WHERE (mark > 5) AND  ( date >= '2022/01/01' AND date < '2023/01/01')`;
-       // connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
-
-        //-- Listar estudiantes del año en curso--FALTA
-       
-        // let sql = "SELECT * FROM student WHERE year = 2022;"
-        // connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
-
-        //-- Calcular el número de profes por asignatura
-        // let sql= `SELECT subject_id, COUNT(*) FROM subject_teacher GROUP BY subject_id;`;
-
-// connection.query(sql, (error, result) => {
-//     if (!error) {
-//         console.log('Operación correcta');
-//         console.log(result);
-//     }else (
-//         console.log(error)
-//     )
-// })
-
-    }catch(err){
+}catch(err){
         console.log(err);
         await connection.end();
     }
-};
+    };
+    
+    main();
 
-connect();
 
-// codenotchDB.connect((error) => {
-//     if (!error) {
-//         console.log('Conectado a la bbdd codenotch')
-//     }else {
-//         console.log(error)
-//     }
-// })
+    // let mysql = require("mysql2");
+    // let connection = mysql.createConnection(
+    //     {
+    //         host : "localhost",
+    //         user : "root",
+    //         password : "",
+    //         database : "dia3"
+    //     }
+    // );
+    
+    
+    // connection.connect(function(error){
+    //     if(error){
+    //         console.log(error);
+    //     }else{
+    //         console.log("Conexión correcta.")
+    //     }
+    // });
+    // let params =['Prestamo'];
+    // let sql = "SELECT Piezas.NombrePieza, Localizacion.nombreLocalizacion, Prestamos.FechaDevolucion, PropietarioPiezas.Nombre, PropietarioPiezas.Apellidos, PropietarioPiezas.Email, Prestamos.TipoPrestamo FROM Piezas JOIN Prestamos ON (Piezas.idPrestamo = Prestamos.idPrestamos) JOIN PropietarioPiezas ON (Prestamos.idPropietario = PropietarioPiezas.idPropietarioPiezas) JOIN Localizacion ON (Piezas.idLocalizacion = Localizacion.idLocalizacion) WHERE Prestamos.TipoPrestamo = ?";
+    // connection.query(sql,params, function (err, result){
+    //             if(err) {
+    //                 console.log(err);
+    //             }
+    //             else {
+    //                 console.log('Listado de objetos:');
+    //                 console.log(result);
+    
+    //             }
+    //         });
